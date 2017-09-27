@@ -203,7 +203,7 @@ def SEND_MESSAGE(op):
                     client.inviteIntoGroup(msg.to, [key])
                     contact = client.getContact(key)
                     client.sendMessage(msg.to, ""+contact.displayName+" I invited you")
-                if "me" in msg.text:
+                if msg.text == "Me":
                     M = Message()
                     M.to = msg.to
                     M.contentType = 13
@@ -220,8 +220,8 @@ def SEND_MESSAGE(op):
                     client.sendMessage(msg.to, text="gift sent", contentMetadata={'PRDID': 'a0768339-c2d3-4189-9653-2909e9bb6f58',
                                     'PRDTYPE': 'THEME',
                                     'MSGTPL': '5'}, contentType=9)
-                if "Set" in msg.text:
-                    sendMessage(msg.to, "Check sider")
+                if msg.text == "Set":
+                    client.sendMessage(msg.to, "Check sider")
                     try:
                         del wait['readPoint'][msg.to]
                         del wait['readMember'][msg.to]
@@ -232,7 +232,7 @@ def SEND_MESSAGE(op):
                     wait['setTime'][msg.to] = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
                     wait['ROM'][msg.to] = {}
                     print wait
-                if "Point" in msg.text :
+                if msg.text == "Point":
                     if msg.to in wait['readPoint']:
                         if wait["ROM"][msg.to].items() == []:
                             chiya = ""
