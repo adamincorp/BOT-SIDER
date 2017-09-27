@@ -220,7 +220,7 @@ def SEND_MESSAGE(op):
                     sendMessage(msg.to, text="gift sent", contentMetadata={'PRDID': 'a0768339-c2d3-4189-9653-2909e9bb6f58',
                                     'PRDTYPE': 'THEME',
                                     'MSGTPL': '5'}, contentType=9)
-                if msg.text == "Check":
+                if "Check" in msg.text:
                     sendMessage(msg.to, "Check sider")
                     try:
                         del wait['readPoint'][msg.to]
@@ -232,7 +232,7 @@ def SEND_MESSAGE(op):
                     wait['setTime'][msg.to] = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
                     wait['ROM'][msg.to] = {}
                     print wait
-                if msg.text == "Point":
+                if "Point" in msg.text :
                     if msg.to in wait['readPoint']:
                         if wait["ROM"][msg.to].items() == []:
                             chiya = ""
