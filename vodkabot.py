@@ -39,7 +39,7 @@ def sendMessage(to, text, contentMetadata={}, contentType=0):
 
 def NOTIFIED_ADD_CONTACT(op):
     try:
-        sendMessage(op.param1, client.getContact(op.param1).displayName + "Thanks for add")
+        client.sendMessage(op.param1, client.getContact(op.param1).displayName + "Thanks for add")
     except Exception as e:
         print e
         print ("\n\nNOTIFIED_ADD_CONTACT\n\n")
@@ -50,7 +50,7 @@ tracer.addOpInterrupt(5,NOTIFIED_ADD_CONTACT)
 def NOTIFIED_ACCEPT_GROUP_INVITATION(op):
     #print op
     try:
-        sendMessage(op.param1, client.getContact(op.param2).displayName + "WELCOME to " + group.name)
+        client.sendMessage(op.param1, client.getContact(op.param2).displayName + "WELCOME to " + group.name)
     except Exception as e:
         print e
         print ("\n\nNOTIFIED_ACCEPT_GROUP_INVITATION\n\n")
@@ -60,7 +60,7 @@ tracer.addOpInterrupt(17,NOTIFIED_ACCEPT_GROUP_INVITATION)
 
 def NOTIFIED_KICKOUT_FROM_GROUP(op):
     try:
-        sendMessage(op.param1, client.getContact(op.param3).displayName + " Good Bye\n(*´･ω･*)")
+        client.sendMessage(op.param1, client.getContact(op.param3).displayName + " Good Bye\n(*´･ω･*)")
     except Exception as e:
         print e
         print ("\n\nNOTIFIED_KICKOUT_FROM_GROUP\n\n")
@@ -70,7 +70,7 @@ tracer.addOpInterrupt(19,NOTIFIED_KICKOUT_FROM_GROUP)
 
 def NOTIFIED_LEAVE_GROUP(op):
     try:
-        sendMessage(op.param1, client.getContact(op.param2).displayName + " Good Bye\n(*´･ω･*)")
+        client.sendMessage(op.param1, client.getContact(op.param2).displayName + " Good Bye\n(*´･ω･*)")
     except Exception as e:
         print e
         print ("\n\nNOTIFIED_LEAVE_GROUP\n\n")
@@ -124,11 +124,11 @@ def SEND_MESSAGE(op):
         if msg.toType == 0:
             if msg.contentType == 0:
                 if msg.text == "mid":
-                    sendMessage(msg.to, msg.to)
+                    client.sendMessage(msg.to, msg.to)
                 if msg.text == "me":
-                    sendMessage(msg.to, text=None, contentMetadata={'mid': msg.from_}, contentType=13)
+                    client.sendMessage(msg.to, text=None, contentMetadata={'mid': msg.from_}, contentType=13)
                 if msg.text == "gift":
-                    sendMessage(msg.to, text="gift sent", contentMetadata=None, contentType=9)
+                    client.sendMessage(msg.to, text="gift sent", contentMetadata=None, contentType=9)
                 else:
                     pass
             else:
@@ -136,9 +136,9 @@ def SEND_MESSAGE(op):
         if msg.toType == 2:
             if msg.contentType == 0:
                 if msg.text == "mid":
-                    sendMessage(msg.to, msg.from_)
+                    client.sendMessage(msg.to, msg.from_)
                 if msg.text == "gid":
-                    sendMessage(msg.to, msg.to)
+                    client.sendMessage(msg.to, msg.to)
                 if msg.text == "ginfo":
                     group = client.getGroup(msg.to)
                     md = "[Group Name]\n" + group.name + "\n\n[gid]\n" + group.id + "\n\n[Group Picture]\nhttp://dl.profile.line-cdn.net/" + group.pictureStatus
@@ -146,15 +146,15 @@ def SEND_MESSAGE(op):
                     else: md += "\n\nInvitationURL: Refusing\n"
                     if group.invitee is None: md += "\nMembers: " + str(len(group.members)) + "人\n\nInviting: 0People"
                     else: md += "\nMembers: " + str(len(group.members)) + "People\nInvited: " + str(len(group.invitee)) + "People"
-                    sendMessage(msg.to,md)
+                    client.sendMessage(msg.to,md)
                 if "gname:" in msg.text:
                     key = msg.text[22:]
                     group = client.getGroup(msg.to)
                     group.name = key
                     client.updateGroup(group)
-                    sendMessage(msg.to,"Group Name"+key+"Canged to")
+                    client.sendMessage(msg.to,"Group Name"+key+"Canged to")
                 if msg.text == "url":
-                    sendMessage(msg.to,"line://ti/g/" + client._client.reissueGroupTicket(msg.to))
+                    client.sendMessage(msg.to,"line://ti/g/" + client._client.reissueGroupTicket(msg.to))
                 if msg.text == "open":
                     group = client.getGroup(msg.to)
                     if group.preventJoinByTicket == False:
@@ -162,20 +162,20 @@ def SEND_MESSAGE(op):
                     else:
                         group.preventJoinByTicket = False
                         client.updateGroup(group)
-                        sendMessage(msg.to, "URL Open")
-                if msg.text == "close":
+                        client.sendMessage(msg.to, "URL Open")
+                if "close" in msg.text:
                     group = client.getGroup(msg.to)
                     if group.preventJoinByTicket == True:
-                        sendMessage(msg.to, "already close")
+                        client.sendMessage(msg.to, "Sorry tutup")
                     else:
                         group.preventJoinByTicket = True
                         client.updateGroup(group)
-                        sendMessage(msg.to, "URL close")
+                        client.sendMessage(msg.to, "URL close")
                 if "kick:" in msg.text:
                     key = msg.text[5:]
                     client.kickoutFromGroup(msg.to, [key])
                     contact = client.getContact(key)
-                    sendMessage(msg.to, ""+contact.displayName+"sorry")
+                    client.sendMessage(msg.to, ""+contact.displayName+"sorry")
                 if "nk:" in msg.text:
                     key = msg.text[3:]
                     group = client.getGroup(msg.to)
@@ -186,24 +186,24 @@ def SEND_MESSAGE(op):
                         sendMessage(msg.to, "Bye")
                         client.kickoutFromGroup(msg.to, [""+Mids[kazu]+""])
                         contact = client.getContact(Mids[kazu])
-                        sendMessage(msg.to, ""+contact.displayName+" Sorry")
+                        client.sendMessage(msg.to, ""+contact.displayName+" Sorry")
                     else:
                         sendMessage(msg.to, "wtf?")
-                if msg.text == "cancel":
+                if "cancel" in msg.text:
                     group = client.getGroup(msg.to)
                     if group.invitee is None:
-                        sendMessage(op.message.to, "No one is inviting.")
+                        client.sendMessage(op.message.to, "No one is inviting.")
                     else:
                         gInviMids = [contact.mid for contact in group.invitee]
                         client.cancelGroupInvitation(msg.to, gInviMids)
-                        sendMessage(msg.to, str(len(group.invitee)) + " Done")
+                        client.sendMessage(msg.to, str(len(group.invitee)) + " Done")
                 if "invite:" in msg.text:
                     key = msg.text[-33:]
                     client.findAndAddContactsByMid(key)
                     client.inviteIntoGroup(msg.to, [key])
                     contact = client.getContact(key)
-                    sendMessage(msg.to, ""+contact.displayName+" I invited you")
-                if msg.text == "me":
+                    client.sendMessage(msg.to, ""+contact.displayName+" I invited you")
+                if "me" in msg.text:
                     M = Message()
                     M.to = msg.to
                     M.contentType = 13
@@ -213,14 +213,14 @@ def SEND_MESSAGE(op):
                     key = msg.text[-33:]
                     sendMessage(msg.to, text=None, contentMetadata={'mid': key}, contentType=13)
                     contact = client.getContact(key)
-                    sendMessage(msg.to, ""+contact.displayName+"'s contact")
-                if msg.text == "time":
-                    sendMessage(msg.to, "Current time is" + datetime.datetime.today().strftime('%Y年%m月%d日 %H:%M:%S') + "is")
+                    client.sendMessage(msg.to, ""+contact.displayName+"'s contact")
+                if "time" in msg.text:
+                    client.sendMessage(msg.to, "Current is" + datetime.datetime.today().strftime('%Y年%m月%d日 %H:%M:%S') + "is")
                 if msg.text == "gift":
-                    sendMessage(msg.to, text="gift sent", contentMetadata={'PRDID': 'a0768339-c2d3-4189-9653-2909e9bb6f58',
+                    client.sendMessage(msg.to, text="gift sent", contentMetadata={'PRDID': 'a0768339-c2d3-4189-9653-2909e9bb6f58',
                                     'PRDTYPE': 'THEME',
                                     'MSGTPL': '5'}, contentType=9)
-                if "Check" in msg.text:
+                if "Set" in msg.text:
                     sendMessage(msg.to, "Check sider")
                     try:
                         del wait['readPoint'][msg.to]
@@ -242,9 +242,9 @@ def SEND_MESSAGE(op):
                                 print rom
                                 chiya += rom[1] + "\n"
 
-                        sendMessage(msg.to, "-----Tercyduck------- %s\n---------Tukang Ngintip--------\n%sAwas Bintitan\n\nReading point creation date n time:\n[%s]"  % (wait2['readMember'][msg.to],chiya,setTime[msg.to]))
+                        client.sendMessage(msg.to, "-----Tercyduck------- %s\n---------Tukang Ngintip--------\n%sAwas Bintitan\n\nReading point creation date n time:\n[%s]"  % (wait2['readMember'][msg.to],chiya,setTime[msg.to]))
                     else:
-                        sendMessage(msg.to, "Check Sider Sudah On")
+                        client.sendMessage(msg.to, "Check Sider Sudah On")
                 else:
                     pass
         else:
